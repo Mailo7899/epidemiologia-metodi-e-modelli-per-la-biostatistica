@@ -1,0 +1,1058 @@
+---
+title: "project LABR biostat"
+author: "millone rossi"
+date: "2023-01-01"
+output:
+  word_document: default
+  html_document:
+    df_print: paged
+---
+
+```{r}
+options(scipen=999,digits = 3)
+library(readxl)
+SOFA <- read_excel("SOFA_dataDecessoMod.xlsx", col_types = c("numeric", 
+    "date", "numeric", "numeric", "numeric", 
+    "numeric", "numeric", "numeric", "numeric", 
+    "numeric", "numeric", "numeric", "numeric", "numeric", 
+    "numeric", "date", "date", "numeric", 
+    "numeric", "date"))
+#View(SOFA)
+s <- SOFA
+
+s$data_decesso <- s$`DATA DECESSO`
+
+
+#qua bisogna cambiare tipologia variabile da characther a factor 
+#s$data_decesso <- as.factor(s$data_decesso)
+#install.packages("Rcmdr", dependencies=TRUE)#SALVEZZA
+require(Rcmdr)
+#str(s)
+#View(s)
+#names(s) <- make.names(names(s))
+
+
+s <- within(s, {
+  data_decesso <- Recode(data_decesso, 'NA="2013-01-01"', as.factor=TRUE, to.value="=", interval=":", separator=";")########
+})
+
+
+#ricodifica variabile data decesso (elimina l'ora)
+s$data_decesso_ric <- as.Date(s$data_decesso, format ("%Y-%m-%d"),
+        optional = FALSE)
+
+#creo variabile status
+s$time_days<-difftime(s$data_decesso_ric, s$DATINT, units = "days" )  #calcola durata follow up in giorni (da data intervento a data decesso o fine follow up)
+s$time_weeks<-difftime(s$data_decesso_ric, s$DATINT, units = "weeks" ) #calcola durata follow up in settimane (da data intervento a data decesso o fine follow up)
+#ATTENZIONE: 2 pazienti da eliminare, data morte anteriore alla data intervento
+
+
+
+s$status[s$data_decesso_ric != "2012-12-31"] = 1 #morti al 1 gennaio 2013
+s$status[s$data_decesso_ric == "2012-12-31"] = 0 #vivi al 1 gennaio 2013
+
+#elimino parole "days" e "weeks" dalle variabili
+s$time_days<-gsub("days","",as.numeric(s$time_days))
+s$time_weeks<-gsub("weeks","",as.numeric(s$time_weeks))
+s$time_days<-as.numeric(s$time_days)
+s$time_weeks<-as.numeric(s$time_weeks)
+
+
+#ricodifico variabile time_days in anni
+s$time_year <- s$time_days/365
+
+#ricodifico variabile status in factor
+#s$status <- as.factor(s$status)
+
+
+# trasformo la nuova variabile in un fattore ordinato,serve per cambiare categoria di riferimento 
+s$Sofa_CCScore_combined <- factor(s$Sofa_CCScore_combined,levels=c("A","B","C"),ordered = TRUE)
+
+#s$Sofa_CCScore_combined <- factor(s$Sofa_CCScore_combined,ordered = TRUE)
+
+
+
+
+#-------------------------------------------------------------------------------------------
+
+s$Sofa_CCScore_combined <- ordered(s$Sofa_CCScore_combined,levels=c("A","B","C"))
+
+
+#tbl_uv<-coxph(Surv(time_days,status) ~ Sofa_CCScore_combined,data=s)%>%
+  #tbl_regression(exponentiate = TRUE)%>%add_global_p()
+
+#-------------------------------------------------------------------------------------------
+
+
+
+
+
+#############################serve per cambiare categoria di riferimento 
+# Grand-mean center continuous covariates
+#survdat$c_Pay_hourly <- scale(survdat$Pay_hourly, center=TRUE, scale=FALSE)
+#survdat$c_Pay_sat <- scale(survdat$Pay_sat, center=TRUE, scale=FALSE)
+
+# Change reference group to HispanicLatino for categorical covariate by re-ordering levels
+#survdat$HL_Race <- factor(survdat$Race, levels=c("HispanicLatino", "Black", "White"))
+###################################
+
+
+
+
+
+s$giorni<-difftime(s$DATINT, s$NASCITA, units = "days" )  
+s$giorni2<-gsub("days","",as.numeric(s$giorni))
+s$giorni3<-as.numeric(s$giorni2)
+s$eta2 <- s$giorni3/365
+
+s$eta3[s$eta2 <= 85] = 1
+s$eta3[s$eta2 > 85] = 2
+
+
+
+#omettiamo righe false informazioni 
+#s[-c()]
+
+
+#ricodifichiamo SOFA
+s$sofa_ric[s$SOFAING == "0"] = "0" #basso
+s$sofa_ric[s$SOFAING != "0"] = "1" #alto (comprende punteggi di Sofa = 1,2,3)
+
+#ricodifichiamo sex 
+s$SEX[s$SEX == 1] = "maschio" #MAS
+s$SEX[s$SEX == 2] = "femmina" #FEM
+
+#ricodifichiamo SOFA in un altro modo
+s$sofa_ric[s$SOFAING == "0"] = "0" #basso
+s$sofa_ric[s$SOFAING != "0"] = "1" #alto (comprende punteggi di Sofa = 1,2,3)
+
+#ricodifichiamo CCSCORE
+s$CCSCORE_ric[s$CCSCORE == "0" | s$CCSCORE == "1" ] = "0" #basso
+s$CCSCORE_ric[s$CCSCORE == "2" | s$CCSCORE == "3" | s$CCSCORE == "4" | s$CCSCORE == "5" | s$CCSCORE == "6" ] = "1" #alto (comprende punteggi di Sofa = 1,2,3,4)
+
+#creiamo una nuova variabile che combina i diversi livelli di Sofa e CCScore ricodificati
+s$Sofa_CCScore_combined[s$sofa_ric == "0" & s$CCSCORE_ric == "0"] = "A"  #basso, coloro che hanno sia sofa che ccscore basso
+s$Sofa_CCScore_combined[(s$sofa_ric == "1" & s$CCSCORE_ric == "0") | 
+                        (s$sofa_ric == "0" & s$CCSCORE_ric == "1")] = "B" #medio, coloro che hanno sofa basso e ccscore alto o viceversa 
+s$Sofa_CCScore_combined[s$sofa_ric == "1" & s$CCSCORE_ric == "1"] = "C" #alto, coloro che hanno sia sofa che ccscore alto
+
+
+#MMSE 
+s$MMSE[s$MMSE <= 18.9] = "A"
+s$MMSE[s$MMSE > 19 & s$MMSE <= 24.9 ] = "B "  #R fa ordine alfabeico quando crei variabile 
+s$MMSE[s$MMSE >= 25 & s$MMSE <= 25.9] = "C "
+s$MMSE[s$MMSE > 26 & s$MMSE <= 30.5] = "D  "
+
+#s$MMSE <- ordered(s$MMSE,levels=c("grave","moderata","borderline","normalità"))
+#s$MMSE <- factor(s$MMSE,levels=c("grave","moderata","borderline","normalità"))
+                                  
+#vitd
+s$VITD2[s$VITD < 10] = "Carenza "
+s$VITD2[s$VITD >= 10.1 & s$VITD <= 29.9 ] = "Concentrazione insufficiente "
+s$VITD2[s$VITD > 30] = "Concentrazione ideale "
+
+
+#albunima 
+s$alb2[s$ALB <= 3.49] = "valori <3.5 "
+s$alb2[s$ALB >=3.5  ] = " valori normali  "
+
+#IBM
+s$IBM <- s$PESO / (s$ALTEZ/100)^2
+
+
+s$IBM2[s$IBM <18.5  ] = " sottopeso   "
+s$IBM2[s$IBM >=18.5 &  s$ALB <=24.9 ] = " normopeso   "
+s$IBM2[s$IBM >=25 &  s$ALB <=29.9  ] = " sovrappeso   "
+s$IBM2[s$IBM >=30] = " obesità   "
+
+
+#tempric in ore 
+s$TEMPRIC2<- s$TEMPRIC/60
+s$TEMPRIC3[s$TEMPRIC2 <=2] = " entro 2 ore "
+s$TEMPRIC3[s$TEMPRIC2 >2 & s$TEMPRIC2 <=4 ] = " da due ore alle 4 ore  "
+s$TEMPRIC3[s$TEMPRIC2 >4] = " oltre 4 ore  "
+
+
+
+#class(s$sofa_CCScore_combined )
+#colnames(s)
+#library(dplyr)
+```
+
+
+
+
+```{r}
+#togliamo osservazipni/righe che non servono 
+#eliminiamo oss che hanno data decesso prima di data intervento ,un peso ,altezza negativi ,mmse non nel range 
+
+s<-s[-c(13,16,23,24,33,42,43,51,56),]
+s<-s[-c(20,21),]
+
+#togliamo colonne datadecesso e DATADECESSO
+#s<-s[,-c(20,21)]
+
+s$SEX<-as.factor(s$SEX)
+s$sofa_ric <- as.factor(s$sofa_ric)
+s$CCSCORE_ric <- as.factor(s$CCSCORE_ric)
+#s$Sofa_CCScore_combined <- as.factor(s$Sofa_CCScore_combined)
+
+#le variabili che andranno dentro surv per survfit devono essere numeriche 
+#->le numeriche devono essere status ed time_
+#s$status<-as.numeric(s$status)
+
+
+
+
+
+#salvo il dataset definitivo ricodificato
+save(s, file = "Sofa_ric_DEF.Rdata")
+
+```
+
+
+
+
+
+#Dopo un’attenta pulizia del db, procederei con un’analisi descrittiva per valutare come si distribuiscono le variabili in base al punteggio Sofa (variabili di interesse) e/o altre caratteristiche che ritenete interessanti (cc score, sesso)
+
+#fare summary ,test di significativita,vedere distribuzioni con plot tenendo fissa target sofa 
+
+#vedere distribuzioni con plot tenendo fissa target sofa 
+
+##STAT DESCRITTIVE 
+```{r}
+
+summary(s)
+
+
+
+par(mfrow=c(3,3))
+
+barplot(prop.table(table(s$SEX)),ylim = c(0,1),ylab="frequenze percentuali", col = c("darksalmon", "dodgerblue"), main= " Sex")
+
+par(bty = "l")
+boxplot(s$eta2 ~ s$SEX,xlab = "sex",ylab = "età", col = c("darksalmon", "dodgerblue") ,data=s, 
+        names = c("femmine", "maschi"),main="età by sex ")
+
+barplot(prop.table(table(s$MMSE)),ylim = c(0,1),ylab="frequenze percentuali",col = c("darkgoldenrod1", "brown4", "forestgreen", "cyan4"),
+        legend.text=c("A:grave", "B:moderata","C:borderline","D:normalità"), main= "MMSE")
+
+barplot(prop.table(table(s$SOFAING)),ylim = c(0,1),ylab="frequenze percentuali", col = c("yellow", "red", "green", "blue"), main= "Sofa")
+barplot(prop.table(table(s$CCSCORE)),ylim = c(0,1),ylab="frequenze percentuali",
+        col = c("yellow", "orange", "red","violet", "green", "blue", "brown" ),
+        main= " CCScore")
+
+barplot(prop.table(table(s$alb2)),ylab="frequenze percentuali", main= "ALB",ylim = c(0,1),col = c( "darkblue", "darkred" ))
+
+
+
+
+par(mfrow=c(2,4))
+table_sofa_sex <-table(s$CCSCORE_ric,s$SOFAING )
+barplot(table_sofa_sex, col = c( "yellow2", "springgreen4" ), 
+        beside=T,xlab="sofa",ylab="frequenze assolute", main=" punteggi Sofa by CCscore_ric",
+        legend.text=c("ccscore:basso", "ccscore:alto"))
+table_sofa_sex <-table(s$MMSE, s$SOFAING)
+barplot(table_sofa_sex, col = c("darkgoldenrod1", "brown4", "forestgreen", "cyan4"), 
+        beside=T,xlab="sofa",ylab="frequenze assolute", main=" punteggi Sofa by MMSE",
+        legend.text=c("grave", "moderata","borderline","normalità"))
+table_sofa_sex <-table(s$alb2, s$SOFAING)
+barplot(table_sofa_sex, col = c( "darkblue", "darkred" ), 
+        beside=T,xlab="sofa",ylab="frequenze assolute", main=" punteggi Sofa by Albumina",
+        legend.text=c("alb: valori normali ", "alb: valori <3.5  "))
+barplot(prop.table(table(s$status)),ylab="frequenze percentuali", main= "status",ylim = c(0,1),col = c( "antiquewhite", "gray11" ),legend.text=c("0:vivi", "1:deceduti"))
+table_sofa_sex <-table(s$status,s$SOFAING )
+barplot(table_sofa_sex, col = c( "antiquewhite", "gray11" ), 
+        beside=T,xlab="sofa",ylab="frequenze assolute", main=" punteggi Sofa by status",
+        legend.text=c("vivi ", "deceduti   "))
+table_sofa_sex <-table(s$status,s$CCSCORE )
+barplot(table_sofa_sex, col = c( "antiquewhite", "gray11" ), 
+        beside=T,xlab="ccscore",ylab="frequenze assolute", main=" punteggi ccscore by status",
+        legend.text=c("vivi", "deceduti"))
+table_sofa_sex <-table(s$status, s$alb2)
+barplot(table_sofa_sex, col = c( "antiquewhite", "gray11" ), 
+        beside=T,xlab="albumina",ylab="frequenze assolute", main="  Albumina by status ",
+        legend.text=c("vivi ", "deceduti"))
+table_sofa_sex <-table(s$status,s$SEX )
+barplot(table_sofa_sex, col = c( "antiquewhite", "gray11" ), 
+        beside=T,xlab="sex",ylab="frequenze assolute", main=" punteggi sex by status",
+        legend.text=c("vivi", "deceduti"))
+
+
+```
+
+#COMMENTO AC
+# Inoltre potreste appunto provare ad applicare l’analisi di sopravvivenza per plottare le curve di  KM per vedere la mortalità tra chi ha un punteggio sofa elevato piuttosto che basso e fare lo stesso per il cc-score. che relazione c’è tra i due punteggi? oltre nalla km possiamo stimare l?HR con rispettivi intervalli di confidenza per i gruppi posti a confronto
+
+#file di survival analysis 
+# https://rstudio-pubs-static.s3.amazonaws.com/880587_ed39bc71fad24109aee82f133cdd5d4d.html
+# https://learntutorials.net/it/r/topic/3788/analisi-di-sopravvivenza
+# http://statisticaconr.blogspot.com/2009/09/analisi-della-sopravvivenza-curve-di.html?m=1
+
+```{r}
+#Curva Kaplan-Meier rispetto alla variabile categoriale Sofa ricodificata in 0 (valori bassi di Sofa) e 1 (valori alti di Sofa, comprende valori di Sofa da 1 a 4)
+
+
+
+library(survival)
+library(survminer)
+library(dplyr)
+library(ggplot2)
+library(ggsurvfit)
+library(dplyr)
+fit_sofa <- survfit(Surv(time_days,status) ~ sofa_ric, data=s, type="kaplan-meier" )
+summary(fit_sofa)
+
+
+ggsurv  <-  ggsurvplot (
+            fit_sofa ,                      # oggetto survfit con statistiche calcolate. 
+           data  =  s ,              # dati usati per adattare le curve di sopravvivenza. 
+           risk.table  =  TRUE ,        # mostra la tabella dei rischi. 
+           pval  =  TRUE ,  pval.method=TRUE,           # mostra il valore p del log-rank test.conf.int 
+           conf.int = T ,          # mostra gli intervalli di confidenza per # stime puntuali  delle curve di sopravvivenza.
+           palette = c ( "#E7B800" , "#2E9FDF" ),
+            
+                                    
+             xlim  =  c ( 0 , 450),          # presentano un asse X più stretto, ma non influenzano 
+                                    # le stime di sopravvivenza. 
+           xlab  =  "Tempo in giorni" ,    # personalizza l'etichetta dell'asse X. 
+           break.time.by  =  (450/6) ,      # interrompe l'asse X negli intervalli di tempo di 500. 
+           ggtheme  =  theme_light (), # personalizza la trama e la tabella dei rischi con un tema. 
+          risk.table.y.text.col  =  T , # annotazioni di testo della tabella dei rischi di colore. 
+          risk.table.height  =  0.25 , # l'altezza della tabella dei rischi
+          risk.table.y.text  =  FALSE , # mostra le barre invece dei nomi nelle annotazioni di testo 
+                                    # nella legenda della tabella dei rischi. 
+         # ncensor.plot  =  TRUE ,       # traccia il numero di soggetti censurati al tempo t 
+        #  ncensor.plot.height  =  0.25 ,
+           #conf.int.style  =  "step" ,   # personalizza lo stile degli intervalli di confidenza 
+          surv.median.line  =  "hv" ,   # aggiunge il puntatore di sopravvivenza mediano. 
+          legend.labs = c("Basso (Sofa = 0)",
+ "Alto (Sofa = 1,2,3,4)")     # cambia le etichette della legenda.
+        )
+ggsurv
+
+table(s$sofa_ric, s$status)
+```
+
+
+
+```{r}
+#Curva Kaplan-Meier rispetto alla variabile categoriale CCSCORE 
+library(survival)
+library(survminer)
+library(dplyr)
+library(ggplot2)
+library(ggsurvfit)
+library(dplyr)
+
+fit_cc <- survfit(Surv(time_days,status) ~ CCSCORE_ric, data=s, type="kaplan-meier" )
+
+ggsurv  <-  ggsurvplot (
+            fit_cc ,                      # oggetto survfit con statistiche calcolate. 
+           data  =  s ,              # dati usati per adattare le curve di sopravvivenza. 
+           risk.table  =  TRUE ,        # mostra la tabella dei rischi. 
+           pval  =  TRUE ,  pval.method=TRUE,           # mostra il valore p del log-rank test.conf.int 
+           conf.int = T ,          # mostra gli intervalli di confidenza per # stime puntuali  delle curve di sopravvivenza.
+           palette = c (  "violet", "green" ),
+            
+                                    
+             xlim  =  c ( 0 , 453 ),          # presentano un asse X più stretto, ma non influenzano 
+                                    # le stime di sopravvivenza. 
+           xlab  =  "Tempo in giorni" ,    # personalizza l'etichetta dell'asse X. 
+           break.time.by  =  (453/6) ,      # interrompe l'asse X negli intervalli di tempo di 500. 
+           ggtheme  =  theme_light (), # personalizza la trama e la tabella dei rischi con un tema. 
+          risk.table.y.text.col  =  T , # annotazioni di testo della tabella dei rischi di colore. 
+          risk.table.height  =  0.25, # l'altezza della tabella dei rischi
+          risk.table.y.text  =  FALSE , # mostra le barre invece dei nomi nelle annotazioni di testo 
+                                    # nella legenda della tabella dei rischi. 
+         # ncensor.plot  =  TRUE ,       # traccia il numero di soggetti censurati al tempo t 
+        #  ncensor.plot.height  =  0.25 ,
+           #conf.int.style  =  "step" ,   # personalizza lo stile degli intervalli di confidenza 
+          surv.median.line  =  "hv" ,   # aggiunge il puntatore di sopravvivenza mediano. 
+          legend.labs = c("CCScore = 0,1 (basso)", "CCScore = 2,3,4,5,6 (alto)"))
+     # cambia le etichette della legenda.
+  
+ggsurv
+```
+
+```{r}
+
+library(survival)
+library(survminer)
+library(dplyr)
+library(ggplot2)
+library(ggsurvfit)
+library(dplyr)
+
+#modello kaplan meier sempolice senza categoria specifica fissata
+#fit <- survfit(Surv(s$time_days,s$status) ~ 1,data=s, type="kaplan-meier" );print(fit)
+# summary(fit)
+# ggsurvplot(fit,data = s,risk.table = T,conf.int = T,ggtheme =theme_minimal() )
+
+# help(survfit)
+
+ #log-rank test 
+#survdiff(Surv(time_days,status) ~ SEX,data=s)
+ 
+#rischio relativo 
+#rr<-(5/9.72)/(40/35.28);rr
+
+#curva kaplan meier con categoria fissata ,interzione livelli fattoriale #(si prova con sofa score e sesso ) 
+fit_sex <- survfit(Surv(time_days,status) ~ SEX,data=s, type="kaplan-meier" )
+
+
+
+ggsurv  <-  ggsurvplot (
+            fit_sex ,                      # oggetto survfit con statistiche calcolate. 
+           data  =  s ,              # dati usati per adattare le curve di sopravvivenza. 
+           risk.table  =  TRUE ,        # mostra la tabella dei rischi. 
+           pval  =  TRUE ,              # mostra il valore p del log-rank test.conf.int 
+           conf.int = T ,          # mostra gli intervalli di confidenza per # stime puntuali  delle curve di sopravvivenza.
+           palette = c (  "#F400A1","#2E9FDF"),
+            
+                                    
+             xlim  =  c ( 0 , 480 ),          # presentano un asse X più stretto, ma non influenzano 
+                                    # le stime di sopravvivenza. 
+           xlab  =  "Tempo in giorni" ,    # personalizza l'etichetta dell'asse X. 
+           break.time.by  =  25 ,      # interrompe l'asse X negli intervalli di tempo di 500. 
+           ggtheme  =  theme_light (), # personalizza la trama e la tabella dei rischi con un tema. 
+          risk.table.y.text.col  =  T , # annotazioni di testo della tabella dei rischi di colore. 
+          risk.table.height  =  0.25 , # l'altezza della tabella dei rischi
+          risk.table.y.text  =  FALSE , # mostra le barre invece dei nomi nelle annotazioni di testo 
+                                    # nella legenda della tabella dei rischi. 
+         # ncensor.plot  =  TRUE ,       # traccia il numero di soggetti censurati al tempo t 
+        #  ncensor.plot.height  =  0.25 ,
+           #conf.int.style  =  "step" ,   # personalizza lo stile degli intervalli di confidenza 
+          surv.median.line  =  "hv" ,   # aggiunge il puntatore di sopravvivenza mediano. 
+          legend.labs  = 
+            c ("Female","Male")     # cambia le etichette della legenda.
+        
+        )
+ggsurv
+
+```
+
+
+
+
+
+
+
+
+
+
+```{r}
+#ricodifichiamo le 3 variabili in variabili numeriche
+#s$sofa_ric <- as.numeric(s$sofa_ric)
+#s$CCSCORE_ric <- as.numeric(s$CCSCORE_ric)
+#s$SEX <- as.numeric(s$SEX)
+s$Sofa_CCScore_combined <- as.factor(s$Sofa_CCScore_combined)
+
+
+#cox regression con SOFA
+#library(gtsummary)
+#coxph(Surv(time_days,status) ~ SOFAING, data=s) %>% tbl_regression(exp = TRUE)
+
+#cox regression con CCSCORE
+#library(gtsummary)
+#coxph(Surv(time_days,status) ~ CCSCORE, data=s) %>% tbl_regression(exp = TRUE)
+
+#proviamo con Sofa e CCScore ricodificate
+library(gtsummary)
+c1<-coxph(Surv(time_days,status) ~ sofa_ric, data=s) %>% tbl_regression(exp = TRUE)
+c1<-coxph(Surv(time_days,status) ~ sofa_ric, data=s) 
+
+library(gtsummary)
+coxph(Surv(time_days,status) ~ CCSCORE_ric, data=s) %>% tbl_regression(exp = TRUE)
+c4<-coxph(Surv(time_days,status) ~ CCSCORE_ric, data=s) 
+
+library(gtsummary)
+coxph(Surv(time_days,status) ~ SEX, data=s) %>% tbl_regression(exp = TRUE)
+
+
+
+#cox regression con SOFA e CCSCORE
+library(gtsummary)
+c2<-coxph(Surv(time_days,status) ~ sofa_ric + CCSCORE_ric, data=s) %>% tbl_regression(exp = TRUE)
+c2<-coxph(Surv(time_days,status) ~ sofa_ric + CCSCORE_ric, data=s)
+
+#test tra due modelli ,per vedere se devianza si perde oppure no con laumento delle varibili 
+anova(c2,c1,test="LRT") #in questo caso se droppiamo/eliminiamo ccscore da modello comleto non ce discrepanza tra due modelli e non perdiamo potere predittivo 0.29 > 0.05
+anova(c2,c3,test="LRT") #in questo caso se droppiamo/eliminiamo sex da modello comleto sofa e ccscore  non ce discrepanza tra due modelli e non  perdiamo potere predittivo 
+#0.64 > 0.05
+
+anova(c2,c4,test="LRT") #in questo caso se droppiamo/eliminiamo sofa da modello comleto  ce discrepanza tra due modelli e perdiamo potere predittivo 
+#0.015<0.05
+
+
+
+
+
+
+
+
+
+#cox regression con SOFA e SEX
+#library(gtsummary)
+#coxph(Surv(time_days,status) ~ sofa_ric + SEX, data=s) %>% tbl_regression(exp = TRUE)
+
+#cox regression con SOFA CCSCORE e SEX
+#library(gtsummary)
+c3<-coxph(Surv(time_days,status) ~ sofa_ric + CCSCORE_ric + SEX, data=s) %>% tbl_regression(exp = TRUE)
+c3<-coxph(Surv(time_days,status) ~ sofa_ric + CCSCORE_ric + SEX, data=s)
+cox_sofa_cc_sex <- coxph(Surv(time_days,status) ~ sofa_ric + CCSCORE_ric + SEX, data=s) 
+#summary(cox_sofa_cc_sex)
+
+library(gtsummary)
+fit_sofa_cc_combined<-coxph(Surv(time_days,status) ~ Sofa_CCScore_combined, data=s) %>% tbl_regression(exponentiate  =TRUE);
+
+
+library(survival)
+library(ranger)
+library(ggplot2)
+library(dplyr)
+library(ggfortify)
+#aa_fit <-aareg(Surv(time_days, status) ~ Sofa_CCScore_combined + SEX +
+ #                MMSE + sofa_ric + CCSCORE_ric , 
+ #                data = s)
+#aa_fit
+
+#autoplot(aa_fit)
+
+fit_sofa_cc_combined<-coxph(Surv(time_days,status) ~ Sofa_CCScore_combined, data=s);
+cz_combined<-cox.zph(fit_sofa_cc_combined); cz_combined
+ggcoxzph(cz_combined)
+
+ggcoxdiagnostics(fit_sofa_cc_combined, type = "deviance",
+                 linear.predictions = F, ggtheme = theme_bw())
+
+#cz <- cox.zph(cox_sofa_cc_sex); cz
+#ggcoxzph(cz)
+
+#verifica 3 assunti modello Cox
+#ggcoxdiagnostics(cox_sofa_cc_sex, type = "deviance",
+ #                linear.predictions = F, ggtheme = theme_bw())
+
+#ggcoxfunctional(Surv(time, status) ~ age + log(age) + sqrt(age), data = lung)
+
+
+#grafici uguali di ggcoxdiagnostics (manca il p-value)
+#par(mfrow=c(2,2))
+#plot(cz)
+
+
+#HR PER LA VARIABILE COMBINATA
+#creo 2 variabili dummy
+s$Sofa_CCScore_alti[(s$sofa_ric == "1" & s$CCSCORE_ric == "0") | 
+                        (s$sofa_ric == "0" & s$CCSCORE_ric == "1")| 
+                      (s$sofa_ric == "0" & s$CCSCORE_ric == "0")] = "0" #basso
+s$Sofa_CCScore_alti[s$sofa_ric == "1" & s$CCSCORE_ric == "1"] = "1" #alto
+
+coxph(Surv(time_days,status) ~ Sofa_CCScore_alti, data=s) %>% tbl_regression(exp = TRUE)
+
+
+s$Sofa_CCScore_bassi[(s$sofa_ric == "1" & s$CCSCORE_ric == "0") | 
+                        (s$sofa_ric == "0" & s$CCSCORE_ric == "1") |
+                     (s$sofa_ric == "0" & s$CCSCORE_ric == "0")] = "1" #basso
+s$Sofa_CCScore_bassi[s$sofa_ric == "1" & s$CCSCORE_ric == "1"] = "0" #alto
+
+coxph(Surv(time_days,status) ~ Sofa_CCScore_bassi, data=s) %>% tbl_regression(exp = TRUE)
+
+
+s$Sofa_CCScore_alti <- as.numeric(s$Sofa_CCScore_alti)
+s$Sofa_CCScore_bassi <- as.numeric(s$Sofa_CCScore_bassi) 
+coxph(Surv(time_days,status) ~ Sofa_CCScore_alti + Sofa_CCScore_bassi, data=s) %>% tbl_regression(exponentiate = TRUE)
+
+
+
+
+#ggcoxdiagnostics(cox_sofa_cc_sex,
+# type = "deviance",
+# ox.scale = "linear.predictions")
+
+#ggcoxdiagnostics(cox_reg1,
+ #type = "schoenfeld",
+ #ox.scale = "time")
+
+
+#ggforest(cox_reg1)
+
+#ggcoxadjustedcurves(cox_reg1, data=s)
+
+```
+
+#'I residui di Schoenfeld sono leggermente diversi in quanto ogni residuo corrisponde a una variabile, non a un'osservazione.L'uso dei residui di Schoenfeld serve per testare l'ipotesi dei rischi proporzionali.Grambsch e Thernau (1994) hanno proposto che i residui di Schoenfeld in scala possono essere più utili.Tracciando il tempo dell'evento rispetto al residuo di Schoenfeld per ciascuna variabile, l'aderenza delle variabili all'assunzione di PH può essere valutata adattando una curva LOESS al grafico.Una retta passante per un valore residuo 0 con gradiente 0 indica che la variabile soddisfa l'assunzione di PH e quindi non dipende dal tempo.I residui di Schoenfeld possono anche essere valutati attraverso un test di ipotesi.
+
+
+
+
+
+
+
+
+
+
+```{r}
+#Curva Kaplan-Meier rispetto alla variabile categoriale SOFA e CCSCORE combinate ricodificata con 3 livelli (0,1,2)
+library(survival)
+library(survminer)
+library(dplyr)
+library(ggplot2)
+library(ggsurvfit)
+library(dplyr)
+
+fit_cc_sofa_combined <- survfit(Surv(time_days,status) ~ Sofa_CCScore_combined, data=s, type="kaplan-meier" )
+
+ggsurv  <-  ggsurvplot (
+            fit_cc_sofa_combined ,                      # oggetto survfit con statistiche calcolate. 
+           data  =  s ,              # dati usati per adattare le curve di sopravvivenza. 
+           risk.table  =  TRUE ,        # mostra la tabella dei rischi. 
+           pval  =  TRUE ,  pval.method=TRUE,           # mostra il valore p del log-rank test.conf.int 
+           conf.int = T,          # mostra gli intervalli di confidenza per # stime puntuali  delle curve di sopravvivenza.
+           palette = c ( "cadetblue2", "gold","darkgreen" ),
+            
+                                    
+             xlim  =  c ( 0 , 453 ),          # presentano un asse X più stretto, ma non influenzano 
+                                    # le stime di sopravvivenza. 
+           xlab  =  "Tempo in giorni" ,    # personalizza l'etichetta dell'asse X. 
+           break.time.by  =  (453/6) ,      # interrompe l'asse X negli intervalli di tempo di 500. 
+           ggtheme  =  theme_light (), # personalizza la trama e la tabella dei rischi con un tema. 
+          risk.table.y.text.col  =  T , # annotazioni di testo della tabella dei rischi di colore. 
+          risk.table.height  =  0.25, # l'altezza della tabella dei rischi
+          risk.table.y.text  =  FALSE , # mostra le barre invece dei nomi nelle annotazioni di testo 
+                                    # nella legenda della tabella dei rischi. 
+         # ncensor.plot  =  TRUE ,       # traccia il numero di soggetti censurati al tempo t 
+        #  ncensor.plot.height  =  0.25 ,
+           #conf.int.style  =  "step" ,   # personalizza lo stile degli intervalli di confidenza 
+          surv.median.line  =  "hv" ,   # aggiunge il puntatore di sopravvivenza mediano. 
+          legend.labs = c("CCScore = 0 e Sofa = 0",
+                          "CCscore = 0 e Sofa = 1 oppure
+                          CCScore = 1 e Sofa = 0","CCScore = 1 e Sofa = 1"
+                          ))
+     # cambia le etichette della legenda.
+  
+ggsurv
+```
+
+
+#km di mmse 
+```{r}
+#Curva Kaplan-Meier rispetto alla variabile categoriale Sofa ricodificata in 0 (valori bassi di Sofa) e 1 (valori alti di Sofa, comprende valori di Sofa da 1 a 4)
+
+
+
+library(survival)
+library(survminer)
+library(dplyr)
+library(ggplot2)
+library(ggsurvfit)
+library(dplyr)
+fit_MMSE <- survfit(Surv(time_days,status) ~ MMSE, data=s, type="kaplan-meier" )
+summary(fit_MMSE)
+
+
+ggsurv  <-  ggsurvplot (
+            fit_MMSE ,                      # oggetto survfit con statistiche calcolate. 
+           data  =  s ,              # dati usati per adattare le curve di sopravvivenza. 
+           risk.table  =  TRUE ,        # mostra la tabella dei rischi. 
+           pval  =  TRUE ,  pval.method=TRUE,           # mostra il valore p del log-rank test.conf.int 
+           conf.int = T ,          # mostra gli intervalli di confidenza per # stime puntuali  delle curve di sopravvivenza.
+           palette = c ( "#E7B800" , "#2E9FDF","orange","green" ),
+            
+                                    
+             xlim  =  c ( 0 , 450),          # presentano un asse X più stretto, ma non influenzano 
+                                    # le stime di sopravvivenza. 
+           xlab  =  "Tempo in giorni" ,    # personalizza l'etichetta dell'asse X. 
+           break.time.by  =  (450/6) ,      # interrompe l'asse X negli intervalli di tempo di 500. 
+           ggtheme  =  theme_light (), # personalizza la trama e la tabella dei rischi con un tema. 
+          risk.table.y.text.col  =  T , # annotazioni di testo della tabella dei rischi di colore. 
+          risk.table.height  =  0.25 , # l'altezza della tabella dei rischi
+          risk.table.y.text  =  FALSE , # mostra le barre invece dei nomi nelle annotazioni di testo 
+                                    # nella legenda della tabella dei rischi. 
+         # ncensor.plot  =  TRUE ,       # traccia il numero di soggetti censurati al tempo t 
+        #  ncensor.plot.height  =  0.25 ,
+           #conf.int.style  =  "step" ,   # personalizza lo stile degli intervalli di confidenza 
+          surv.median.line  =  "hv" ,   # aggiunge il puntatore di sopravvivenza mediano. 
+          legend.labs = c("borderline", "grave","moderata","normalità"))     # cambia le etichette della legenda.
+        
+ggsurv
+
+table(s$sofa_ric, s$status)
+```
+
+
+
+
+
+
+
+#km di alb 
+```{r}
+#Curva Kaplan-Meier rispetto alla variabile categoriale Sofa ricodificata in 0 (valori bassi di Sofa) e 1 (valori alti di Sofa, comprende valori di Sofa da 1 a 4)
+
+
+
+library(survival)
+library(survminer)
+library(dplyr)
+library(ggplot2)
+library(ggsurvfit)
+library(dplyr)
+fit_alb <- survfit(Surv(time_days,status) ~ alb2, data=s, type="kaplan-meier" )
+summary(fit_alb)
+
+
+ggsurv  <-  ggsurvplot (
+            fit_alb ,                      # oggetto survfit con statistiche calcolate. 
+           data  =  s ,              # dati usati per adattare le curve di sopravvivenza. 
+           risk.table  =  TRUE ,        # mostra la tabella dei rischi. 
+           pval  =  TRUE ,  pval.method=TRUE,           # mostra il valore p del log-rank test.conf.int 
+           conf.int = T ,          # mostra gli intervalli di confidenza per # stime puntuali  delle curve di sopravvivenza.
+           palette = c ( "burlywood" , "indianred4" ),
+            
+                                    
+             xlim  =  c ( 0 , 450),          # presentano un asse X più stretto, ma non influenzano 
+                                    # le stime di sopravvivenza. 
+           xlab  =  "Tempo in giorni" ,    # personalizza l'etichetta dell'asse X. 
+           break.time.by  =  (450/6) ,      # interrompe l'asse X negli intervalli di tempo di 500. 
+           ggtheme  =  theme_light (), # personalizza la trama e la tabella dei rischi con un tema. 
+          risk.table.y.text.col  =  T , # annotazioni di testo della tabella dei rischi di colore. 
+          risk.table.height  =  0.25 , # l'altezza della tabella dei rischi
+          risk.table.y.text  =  FALSE , # mostra le barre invece dei nomi nelle annotazioni di testo 
+                                    # nella legenda della tabella dei rischi. 
+         # ncensor.plot  =  TRUE ,       # traccia il numero di soggetti censurati al tempo t 
+        #  ncensor.plot.height  =  0.25 ,
+           #conf.int.style  =  "step" ,   # personalizza lo stile degli intervalli di confidenza 
+          surv.median.line  =  "hv" ,   # aggiunge il puntatore di sopravvivenza mediano. 
+          legend.labs = c("alb: valori normali ", "alb: valori <3.5  "))     # cambia le etichette della legenda.
+        
+ggsurv
+
+table(s$sofa_ric, s$status)
+```
+
+
+
+
+
+#km di vitd 
+```{r}
+#Curva Kaplan-Meier rispetto alla variabile categoriale Sofa ricodificata in 0 (valori bassi di Sofa) e 1 (valori alti di Sofa, comprende valori di Sofa da 1 a 4)
+
+
+
+library(survival)
+library(survminer)
+library(dplyr)
+library(ggplot2)
+library(ggsurvfit)
+library(dplyr)
+fit_vitd <- survfit(Surv(time_days,status) ~ VITD2, data=s, type="kaplan-meier" )
+summary(fit_vitd)
+
+ggsurvplot( fit_vitd ,                      # oggetto survfit con statistiche calcolate. 
+           data  =  s )
+ggsurv  <-  ggsurvplot (
+            fit_vitd ,                      # oggetto survfit con statistiche calcolate. 
+           data  =  s ,              # dati usati per adattare le curve di sopravvivenza. 
+           risk.table  =  TRUE ,        # mostra la tabella dei rischi. 
+           pval  =  TRUE ,  pval.method=TRUE,           # mostra il valore p del log-rank test.conf.int 
+           conf.int = T ,          # mostra gli intervalli di confidenza per # stime puntuali  delle curve di sopravvivenza.
+           palette = c ( "#E7B800" , "#2E9FDF","orange" ),
+            
+                                    
+             xlim  =  c ( 0 , 450),          # presentano un asse X più stretto, ma non influenzano 
+                                    # le stime di sopravvivenza. 
+           xlab  =  "Tempo in giorni" ,    # personalizza l'etichetta dell'asse X. 
+           break.time.by  =  (450/6) ,      # interrompe l'asse X negli intervalli di tempo di 500. 
+           ggtheme  =  theme_light (), # personalizza la trama e la tabella dei rischi con un tema. 
+          risk.table.y.text.col  =  T , # annotazioni di testo della tabella dei rischi di colore. 
+          risk.table.height  =  0.25 , # l'altezza della tabella dei rischi
+          risk.table.y.text  =  FALSE , # mostra le barre invece dei nomi nelle annotazioni di testo 
+                                    # nella legenda della tabella dei rischi. 
+         # ncensor.plot  =  TRUE ,       # traccia il numero di soggetti censurati al tempo t 
+        #  ncensor.plot.height  =  0.25 ,
+           #conf.int.style  =  "step" ,   # personalizza lo stile degli intervalli di confidenza 
+          surv.median.line  =  "hv" ,   # aggiunge il puntatore di sopravvivenza mediano. 
+          legend.labs = c("carenza", "Concentrazione ideale "," Concentrazione insufficiente"))     # cambia le etichette della legenda.
+        
+ggsurv
+
+table(s$sofa_ric, s$status)
+```
+
+
+
+
+
+
+#km di ibm 
+```{r}
+#Curva Kaplan-Meier rispetto alla variabile categoriale Sofa ricodificata in 0 (valori bassi di Sofa) e 1 (valori alti di Sofa, comprende valori di Sofa da 1 a 4)
+
+
+
+library(survival)
+library(survminer)
+library(dplyr)
+library(ggplot2)
+library(ggsurvfit)
+library(dplyr)
+fit_ibm <- survfit(Surv(time_days,status) ~ IBM2, data=s, type="kaplan-meier" )
+summary(fit_ibm)
+
+
+ggsurv  <-  ggsurvplot (
+            fit_ibm ,                      # oggetto survfit con statistiche calcolate. 
+           data  =  s ,              # dati usati per adattare le curve di sopravvivenza. 
+           risk.table  =  TRUE ,        # mostra la tabella dei rischi. 
+           pval  =  TRUE ,  pval.method=TRUE,           # mostra il valore p del log-rank test.conf.int 
+           conf.int = F ,          # mostra gli intervalli di confidenza per # stime puntuali  delle curve di sopravvivenza.
+           palette = c ( "#E7B800" , "#2E9FDF","orange","green" ),
+            
+                                    
+             xlim  =  c ( 0 , 450),          # presentano un asse X più stretto, ma non influenzano 
+                                    # le stime di sopravvivenza. 
+           xlab  =  "Tempo in giorni" ,    # personalizza l'etichetta dell'asse X. 
+           break.time.by  =  (450/6) ,      # interrompe l'asse X negli intervalli di tempo di 500. 
+           ggtheme  =  theme_light (), # personalizza la trama e la tabella dei rischi con un tema. 
+          risk.table.y.text.col  =  T , # annotazioni di testo della tabella dei rischi di colore. 
+          risk.table.height  =  0.25 , # l'altezza della tabella dei rischi
+          risk.table.y.text  =  FALSE , # mostra le barre invece dei nomi nelle annotazioni di testo 
+                                    # nella legenda della tabella dei rischi. 
+         # ncensor.plot  =  TRUE ,       # traccia il numero di soggetti censurati al tempo t 
+        #  ncensor.plot.height  =  0.25 ,
+           #conf.int.style  =  "step" ,   # personalizza lo stile degli intervalli di confidenza 
+          surv.median.line  =  "hv" ,   # aggiunge il puntatore di sopravvivenza mediano. 
+          legend.labs = c("normopeso", "obesità","sottopeso","sovrappeso"))     # cambia le etichette della legenda.
+        
+ggsurv
+
+table(s$sofa_ric, s$status)
+```
+
+
+#km di ANEST 
+```{r}
+#Curva Kaplan-Meier rispetto alla variabile categoriale Sofa ricodificata in 0 (valori bassi di Sofa) e 1 (valori alti di Sofa, comprende valori di Sofa da 1 a 4)
+
+
+s$ANEST<-as.character(s$ANEST)
+library(survival)
+library(survminer)
+library(dplyr)
+library(ggplot2)
+library(ggsurvfit)
+library(dplyr)
+fit_ANEST <- survfit(Surv(time_days,status) ~ ANEST, data=s, type="kaplan-meier" )
+summary(fit_ANEST)
+
+
+ggsurv  <-  ggsurvplot (
+            fit_ANEST ,                      # oggetto survfit con statistiche calcolate. 
+           data  =  s ,              # dati usati per adattare le curve di sopravvivenza. 
+           risk.table  =  TRUE ,        # mostra la tabella dei rischi. 
+           pval  =  TRUE ,  pval.method=TRUE,           # mostra il valore p del log-rank test.conf.int 
+           conf.int = F ,          # mostra gli intervalli di confidenza per # stime puntuali  delle curve di sopravvivenza.
+           palette = c ( "orange","green","black","grey" ),
+            
+                                    
+             xlim  =  c ( 0 , 450),          # presentano un asse X più stretto, ma non influenzano 
+                                    # le stime di sopravvivenza. 
+           xlab  =  "Tempo in giorni" ,    # personalizza l'etichetta dell'asse X. 
+           break.time.by  =  (450/6) ,      # interrompe l'asse X negli intervalli di tempo di 500. 
+           ggtheme  =  theme_light (), # personalizza la trama e la tabella dei rischi con un tema. 
+          risk.table.y.text.col  =  T , # annotazioni di testo della tabella dei rischi di colore. 
+          risk.table.height  =  0.25 , # l'altezza della tabella dei rischi
+          risk.table.y.text  =  FALSE , # mostra le barre invece dei nomi nelle annotazioni di testo 
+                                    # nella legenda della tabella dei rischi. 
+         # ncensor.plot  =  TRUE ,       # traccia il numero di soggetti censurati al tempo t 
+        #  ncensor.plot.height  =  0.25 ,
+           #conf.int.style  =  "step" ,   # personalizza lo stile degli intervalli di confidenza 
+          surv.median.line  =  "hv" ,   # aggiunge il puntatore di sopravvivenza mediano. 
+          legend.labs = c("1", "2","4","5"))     # cambia le etichette della legenda.
+        
+ggsurv
+
+```
+
+
+
+#km di tempric 
+```{r}
+#Curva Kaplan-Meier rispetto alla variabile categoriale Sofa ricodificata in 0 (valori bassi di Sofa) e 1 (valori alti di Sofa, comprende valori di Sofa da 1 a 4)
+
+
+s$ANEST<-as.character(s$ANEST)
+library(survival)
+library(survminer)
+library(dplyr)
+library(ggplot2)
+library(ggsurvfit)
+library(dplyr)
+fit_temproic <- survfit(Surv(time_days,status) ~ TEMPRIC3, data=s, type="kaplan-meier" )
+summary(fit_temproic)
+
+
+ggsurv  <-  ggsurvplot (
+            fit_temproic ,                      # oggetto survfit con statistiche calcolate. 
+           data  =  s ,              # dati usati per adattare le curve di sopravvivenza. 
+           risk.table  =  TRUE ,        # mostra la tabella dei rischi. 
+           pval  =  TRUE ,  pval.method=TRUE,           # mostra il valore p del log-rank test.conf.int 
+           conf.int = F ,          # mostra gli intervalli di confidenza per # stime puntuali  delle curve di sopravvivenza.
+           palette = c ( "orange","black","grey" ),
+            
+                                    
+             xlim  =  c ( 0 , 450),          # presentano un asse X più stretto, ma non influenzano 
+                                    # le stime di sopravvivenza. 
+           xlab  =  "Tempo in giorni" ,    # personalizza l'etichetta dell'asse X. 
+           break.time.by  =  (450/6) ,      # interrompe l'asse X negli intervalli di tempo di 500. 
+           ggtheme  =  theme_light (), # personalizza la trama e la tabella dei rischi con un tema. 
+          risk.table.y.text.col  =  T , # annotazioni di testo della tabella dei rischi di colore. 
+          risk.table.height  =  0.25 , # l'altezza della tabella dei rischi
+          risk.table.y.text  =  FALSE , # mostra le barre invece dei nomi nelle annotazioni di testo 
+                                    # nella legenda della tabella dei rischi. 
+         # ncensor.plot  =  TRUE ,       # traccia il numero di soggetti censurati al tempo t 
+        #  ncensor.plot.height  =  0.25 ,
+           #conf.int.style  =  "step" ,   # personalizza lo stile degli intervalli di confidenza 
+          surv.median.line  =  "hv" ,   # aggiunge il puntatore di sopravvivenza mediano. 
+          legend.labs = c("entrop 2 ore ", "dalle 2 alle 4 ore ","oltre 4 ore "))     # cambia le etichette della legenda.
+        
+ggsurv
+
+```
+
+
+
+
+
+
+```{r}
+fit_hhhh <- survfit(Surv(time_days,status) ~ s$sofa_ric+s$CCSCORE_ric+s$MMSE, data=s, type="kaplan-meier" )
+summary(fit_hhhh)
+
+
+ggsurv  <-  ggsurvplot (
+            fit_hhhh ,                      # oggetto survfit con statistiche calcolate. 
+           data  =  s) 
+```
+
+
+
+#modelli di cox con variabili ibm alb vitd mmse sex sofa ccscore combinata 
+```{r}
+library(gtsummary)
+cx_ibm<-coxph(Surv(time_days,status) ~ IBM2, data=s)%>%tbl_regression(exponentiate = TRUE);
+cx_ibm<-coxph(Surv(time_days,status) ~ IBM2, data=s)
+cz_combined<-cox.zph(cx_ibm); cz_combined
+ggcoxzph(cz_combined)
+
+
+
+
+s$MMSE<-as.factor(s$MMSE)
+#s$MMSE<-as.character(s$MMSE)#characteristic	HR1	95% CI1	p-value
+s$MMSE<-as.numeric(s$MMSE)#MMSE	           0.74	0.39, 1.39	0.3
+
+
+cx_mmse<-coxph(Surv(time_days,status) ~ MMSE, data=s)%>%tbl_regression(exponentiate = TRUE);
+cx_mmse<-coxph(Surv(time_days,status) ~ MMSE, data=s)
+cz_combined<-cox.zph(cx_mmse); cz_combined
+ggcoxzph(cz_combined)
+
+
+s$alb2<-as.factor(s$alb2)
+s$alb2<-as.numeric(s$alb2)
+cx_alb<-coxph(Surv(time_days,status) ~ alb2, data=s)%>%tbl_regression(exponentiate = TRUE);
+cx_alb<-coxph(Surv(time_days,status) ~ alb2, data=s)
+cz_combined<-cox.zph(cx_alb); cz_combined
+ggcoxzph(cz_combined)
+
+
+
+
+s$VITD2<-as.factor(s$VITD2)
+s$VITD2<-as.numeric(s$VITD2)
+cx_vitd<-coxph(Surv(time_days,status) ~ VITD2, data=s)%>%tbl_regression(exponentiate = TRUE);
+cx_vitd<-coxph(Surv(time_days,status) ~ VITD2, data=s)
+cz_combined<-cox.zph(cx_vitd); cz_combined
+ggcoxzph(cz_combined)
+
+s$SEX<-as.factor(s$SEX)
+s$SEX<-as.numeric(s$SEX)
+s$sofa_ric<-as.factor(s$sofa_ric)
+s$sofa_ric<-as.numeric(s$sofa_ric)
+s$CCSCORE_ric<-as.factor(s$CCSCORE_ric)
+s$CCSCORE_ric<-as.numeric(s$CCSCORE_ric)
+s$alb2<-as.factor(s$alb2)
+s$alb2<-as.numeric(s$alb2)
+
+ s$SEX<-as.numeric(s$SEX)
+cx_tutto<-coxph(Surv(time_days,status) ~ alb2+sofa_ric+CCSCORE_ric+SEX+eta2, data=s)%>%tbl_regression(exponentiate = TRUE);cx_tutto
+cx_tutto2<-coxph(Surv(time_days,status) ~ alb2+SOFAING+CCSCORE+SEX+eta2, data=s)%>%tbl_regression(exponentiate = TRUE);cx_tutto2
+cx_tutto5<-coxph(Surv(time_days,status) ~ SOFAING+alb2+CCSCORE+SEX+eta3, data=s)%>%tbl_regression(exponentiate = TRUE);cx_tutto5#
+
+cx_tutto3<-coxph(Surv(time_days,status) ~ alb2+SOFAING*CCSCORE+SEX+eta2, data=s)%>%tbl_regression(exponentiate = TRUE);cx_tutto3
+cx_tutto4<-coxph(Surv(time_days,status) ~ alb2+SOFAING*CCSCORE+SEX+eta3, data=s)%>%tbl_regression(exponentiate = TRUE);cx_tutto4
+
+
+cx___<-coxph(Surv(time_days,status) ~ SOFAING+alb2+CCSCORE+SEX+eta3, data=s)
+cx_tutto7<-coxph(Surv(time_days,status) ~ alb2+CCSCORE+SEX+eta3, data=s)
+cx_tutto8<-coxph(Surv(time_days,status) ~ CCSCORE+SEX+eta3, data=s)
+cx_tutto9<-coxph(Surv(time_days,status) ~ SEX+eta3, data=s)
+cx_tutto10<-coxph(Surv(time_days,status) ~ eta3, data=s)
+
+cz_combined<-cox.zph(cx___); cz_combined
+ggcoxzph(cz_combined)
+
+
+anova(cx___,cx_tutto7,cx_tutto8,cx_tutto9,cx_tutto10,test="LRT")
+```
+
+
+
+
+
+
+
+
+#aic
+```{r}
+
+s2 <- s[, -c(1,20,21)]
+fit2 <- lm(status~., data=s2); summary(fit2)
+library(MASS)
+step <- stepAIC(fit2, direction="both")
+```
+
+
+#anova con mopdelli di cox 
+```{r}
+s$Sofa_CCScore_combined<-as.factor(s$Sofa_CCScore_combined)
+s$Sofa_CCScore_combined<-as.numeric(s$Sofa_CCScore_combined)
+cx_tutto<-coxph(Surv(time_days,status) ~ alb2+sofa_ric+CCSCORE_ric+Sofa_CCScore_combined, data=s)
+cz_combined<-cox.zph(cx_tutto); cz_combined
+ggcoxzph(cz_combined)
+library(gtsummary)
+library(survminer)
+c_l<-coxph(Surv(time_days,status) ~ alb2+sofa_ric+CCSCORE_ric, data=s)%>%tbl_regression(exp=T)
+c_l<-coxph(Surv(time_days,status) ~ alb2+sofa_ric+CCSCORE_ric, data=s)
+cz_combined<-cox.zph(c_l); cz_combined
+ggcoxzph(cz_combined)
+anova(cx_tutto,c_l,c2,c4,test="LRT")
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
