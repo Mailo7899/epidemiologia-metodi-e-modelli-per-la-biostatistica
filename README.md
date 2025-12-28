@@ -1,4 +1,4 @@
-# 📁 Biostatistics & Clinical Data Analysis Projects
+# 🎓 Biostatistics & Clinical Data Analysis Projects
 
 Questo repository raccoglie **progetti accademici di biostatistica e analisi dei dati clinici**, sviluppati durante il corso di laurea magistrale in **Biostatistica** presso l’**Università degli Studi di Milano-Bicocca**.  
 
@@ -6,11 +6,11 @@ I lavori si concentrano su **modelli statistici predittivi**, **analisi di sopra
 
 ---
 
-## 🧠 Project 1 — Modello predittivo del basso peso alla nascita  
+## 📁 Project 1 — Modello predittivo del basso peso alla nascita  
 **Metodi e Modelli Biostatistici per la Ricerca Clinica**
 
-📌 *Millone A. (846588), Rossi S. (857183)*  
-🎓 Università degli Studi di Milano-Bicocca
+
+
 
 ### 🔍 Abstract
 Il progetto ha l’obiettivo di sviluppare e valutare un **modello predittivo per il basso peso alla nascita**, utilizzando informazioni **socio-sanitarie materne**.  
@@ -27,11 +27,9 @@ Sono stati confrontati modelli con diverso livello di complessità. Il modello c
 
 ---
 
-## ⏱️ Project 2 — SOFA e CCScore: analisi di sopravvivenza in pazienti geriatrici  
+## 📁 Project 2 — SOFA e CCScore: analisi di sopravvivenza in pazienti geriatrici  
 **Laboratorio di R per la Biostatistica**
 
-📌 *Millone A. (846588), Rossi S. (857183)*  
-🎓 Università degli Studi di Milano-Bicocca
 
 ### 🔍 Abstract
 Questo progetto analizza la **sopravvivenza di una coorte di pazienti geriatrici sottoposti a intervento chirurgico**, valutando il ruolo prognostico degli indici **SOFA (Sequential Organ Failure Assessment)** e **Charlson Comorbidity Score (CCScore)**.
@@ -54,10 +52,10 @@ I risultati indicano un aumento significativo del rischio di mortalità al cresc
 - Curve ROC e Kaplan–Meier
 - Modelli di Cox
 - Valutazione di discriminazione e calibrazione
-- **R**, **SAS**, **SPSS**
+- **R**, **SAS**
 
 ---
 
 ## 👤 Author
 **Andrea Millone**  
-MSc in Biostatistics — Università degli Studi di Milano-Bicocca
+
