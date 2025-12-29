@@ -4,6 +4,11 @@ Questo repository raccoglie **progetti accademici di biostatistica e analisi dei
 
 I lavori si concentrano su **modelli statistici predittivi**, **analisi di sopravvivenza** e **valutazione delle performance dei modelli**, applicati a contesti clinici reali.
 
+CORSI UNIVERSITARI :
+- METODI E MODELLI BIOSTATISTICI PER RICERCA CLINICA
+- LABORATORIO R PER LA BIOSTATISTICA
+
+
 ---
 
 ## 📁 Project 1 — Modello predittivo del basso peso alla nascita  
