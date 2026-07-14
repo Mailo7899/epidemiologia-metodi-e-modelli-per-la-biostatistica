@@ -1,0 +1,15 @@
+                    The CORR Procedure
+                          2 Variables:    age   lwt
+                    Simple Statistics
+Variable         N      Mean   Std Dev       Sum   Minimum   Maximum
+--------  --------  --------  --------  --------  --------  --------
+age             40   23.00000   4.82515   920.00000  15.00000   34.00000
+lwt             40  120.50000  21.17449  4820.00000  91.00000  182.00000
+   Pearson Correlation Coefficients, N = 40
+          Prob > |r| under H0: Rho=0
+                 age       lwt
+--------  --------  --------
+age        1.00000   0.20956
+              .       0.1944
+lwt        0.20956   1.00000
+            0.1944      .

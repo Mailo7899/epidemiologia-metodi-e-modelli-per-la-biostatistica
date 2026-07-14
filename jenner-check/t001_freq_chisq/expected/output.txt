@@ -1,0 +1,551 @@
+                                                   The FREQ Procedure
+
+                                 Cumulative    Cumulative
+low    Frequency    Percent     Frequency      Percent
+------------------------------------------------------------
+0             20     50.00           20        50.00
+1             20     50.00           40       100.00
+
+Chi-Square Test
+for Equal Proportions
+
+Chi-Square                           0.0000
+DF                                        1
+Pr > ChiSq                           1.0000
+
+                                  Cumulative    Cumulative
+race    Frequency    Percent     Frequency      Percent
+-------------------------------------------------------------
+1              19     47.50           19        47.50
+2               4     10.00           23        57.50
+3              17     42.50           40       100.00
+
+Chi-Square Test
+for Equal Proportions
+
+Chi-Square                           9.9500
+DF                                        2
+Pr > ChiSq                           0.0069
+
+                                   Cumulative    Cumulative
+smoke    Frequency    Percent     Frequency      Percent
+--------------------------------------------------------------
+0               25     62.50           25        62.50
+1               15     37.50           40       100.00
+
+Chi-Square Test
+for Equal Proportions
+
+Chi-Square                           2.5000
+DF                                        1
+Pr > ChiSq                           0.1138
+
+                                 Cumulative    Cumulative
+ptl    Frequency    Percent     Frequency      Percent
+------------------------------------------------------------
+0             37     92.50           37        92.50
+1              2      5.00           39        97.50
+2              1      2.50           40       100.00
+
+Chi-Square Test
+for Equal Proportions
+
+Chi-Square                          63.0500
+DF                                        2
+Pr > ChiSq                           0.0000
+
+                                Cumulative    Cumulative
+ht    Frequency    Percent     Frequency      Percent
+-----------------------------------------------------------
+0            35     87.50           35        87.50
+1             5     12.50           40       100.00
+
+Chi-Square Test
+for Equal Proportions
+
+Chi-Square                          22.5000
+DF                                        1
+Pr > ChiSq                           0.0000
+
+                                Cumulative    Cumulative
+ui    Frequency    Percent     Frequency      Percent
+-----------------------------------------------------------
+0            32     80.00           32        80.00
+1             8     20.00           40       100.00
+
+Chi-Square Test
+for Equal Proportions
+
+Chi-Square                          14.4000
+DF                                        1
+Pr > ChiSq                           0.0001
+                                                   The FREQ Procedure
+
+Table of race by smoke
+
+race |         0 |         1 |      Total
+-----+-----------+-----------+-----------
+1    |         5 |        14 |         19
+     |     12.50 |     35.00 |      47.50
+     |     26.32 |     73.68 |     100.00
+     |     20.00 |     93.33 |      47.50
+-----+-----------+-----------+-----------
+2    |         4 |         0 |          4
+     |     10.00 |      0.00 |      10.00
+     |    100.00 |      0.00 |     100.00
+     |     16.00 |      0.00 |      10.00
+-----+-----------+-----------+-----------
+3    |        16 |         1 |         17
+     |     40.00 |      2.50 |      42.50
+     |     94.12 |      5.88 |     100.00
+     |     64.00 |      6.67 |      42.50
+-----+-----------+-----------+-----------
+Total |        25 |        15 |         40
+
+Statistics for Table of race by smoke
+
+Statistic                                DF  Value         Prob
+--------------------------------------------------------------
+Chi-Square                                2 20.2650       0.0000
+Likelihood Ratio Chi-Square               2 23.4179       0.0000
+
+Cramer's V                           0.7118
+Contingency Coefficient              0.5799
+
+WARNING: 33% of the cells have expected counts less than 5. Chi-Square may not be a valid test.
+
+
+Table of race by ht
+
+race |         0 |         1 |      Total
+-----+-----------+-----------+-----------
+1    |        17 |         2 |         19
+     |     42.50 |      5.00 |      47.50
+     |     89.47 |     10.53 |     100.00
+     |     48.57 |     40.00 |      47.50
+-----+-----------+-----------+-----------
+2    |         4 |         0 |          4
+     |     10.00 |      0.00 |      10.00
+     |    100.00 |      0.00 |     100.00
+     |     11.43 |      0.00 |      10.00
+-----+-----------+-----------+-----------
+3    |        14 |         3 |         17
+     |     35.00 |      7.50 |      42.50
+     |     82.35 |     17.65 |     100.00
+     |     40.00 |     60.00 |      42.50
+-----+-----------+-----------+-----------
+Total |        35 |         5 |         40
+
+Statistics for Table of race by ht
+
+Statistic                                DF  Value         Prob
+--------------------------------------------------------------
+Chi-Square                                2 1.0509       0.5913
+Likelihood Ratio Chi-Square               2 1.5108       0.4698
+
+Cramer's V                           0.1621
+Contingency Coefficient              0.1600
+
+WARNING: 67% of the cells have expected counts less than 5. Chi-Square may not be a valid test.
+
+
+Table of race by ui
+
+race |         0 |         1 |      Total
+-----+-----------+-----------+-----------
+1    |        16 |         3 |         19
+     |     40.00 |      7.50 |      47.50
+     |     84.21 |     15.79 |     100.00
+     |     50.00 |     37.50 |      47.50
+-----+-----------+-----------+-----------
+2    |         2 |         2 |          4
+     |      5.00 |      5.00 |      10.00
+     |     50.00 |     50.00 |     100.00
+     |      6.25 |     25.00 |      10.00
+-----+-----------+-----------+-----------
+3    |        14 |         3 |         17
+     |     35.00 |      7.50 |      42.50
+     |     82.35 |     17.65 |     100.00
+     |     43.75 |     37.50 |      42.50
+-----+-----------+-----------+-----------
+Total |        32 |         8 |         40
+
+Statistics for Table of race by ui
+
+Statistic                                DF  Value         Prob
+--------------------------------------------------------------
+Chi-Square                                2 2.5193       0.2837
+Likelihood Ratio Chi-Square               2 2.0689       0.3554
+
+Cramer's V                           0.2510
+Contingency Coefficient              0.2434
+
+WARNING: 67% of the cells have expected counts less than 5. Chi-Square may not be a valid test.
+
+
+Table of race by ptl
+
+race |         0 |         1 |         2 |      Total
+-----+-----------+-----------+-----------+-----------
+1    |        18 |         0 |         1 |         19
+     |     45.00 |      0.00 |      2.50 |      47.50
+     |     94.74 |      0.00 |      5.26 |     100.00
+     |     48.65 |      0.00 |    100.00 |      47.50
+-----+-----------+-----------+-----------+-----------
+2    |         4 |         0 |         0 |          4
+     |     10.00 |      0.00 |      0.00 |      10.00
+     |    100.00 |      0.00 |      0.00 |     100.00
+     |     10.81 |      0.00 |      0.00 |      10.00
+-----+-----------+-----------+-----------+-----------
+3    |        15 |         2 |         0 |         17
+     |     37.50 |      5.00 |      0.00 |      42.50
+     |     88.24 |     11.76 |      0.00 |     100.00
+     |     40.54 |    100.00 |      0.00 |      42.50
+-----+-----------+-----------+-----------+-----------
+Total |        37 |         2 |         1 |         40
+
+Statistics for Table of race by ptl
+
+Statistic                                DF  Value         Prob
+--------------------------------------------------------------
+Chi-Square                                4 3.8792       0.4226
+Likelihood Ratio Chi-Square               4 4.9794       0.2894
+
+Cramer's V                           0.2202
+Contingency Coefficient              0.2973
+
+WARNING: 78% of the cells have expected counts less than 5. Chi-Square may not be a valid test.
+
+
+Table of smoke by ptl
+
+smoke |         0 |         1 |         2 |      Total
+------+-----------+-----------+-----------+-----------
+0     |        23 |         2 |         0 |         25
+      |     57.50 |      5.00 |      0.00 |      62.50
+      |     92.00 |      8.00 |      0.00 |     100.00
+      |     62.16 |    100.00 |      0.00 |      62.50
+------+-----------+-----------+-----------+-----------
+1     |        14 |         0 |         1 |         15
+      |     35.00 |      0.00 |      2.50 |      37.50
+      |     93.33 |      0.00 |      6.67 |     100.00
+      |     37.84 |      0.00 |    100.00 |      37.50
+------+-----------+-----------+-----------+-----------
+Total |        37 |         2 |         1 |         40
+
+Statistics for Table of smoke by ptl
+
+Statistic                                DF  Value         Prob
+--------------------------------------------------------------
+Chi-Square                                2 2.8685       0.2383
+Likelihood Ratio Chi-Square               2 3.8435       0.1464
+
+Cramer's V                           0.2678
+Contingency Coefficient              0.2587
+
+WARNING: 67% of the cells have expected counts less than 5. Chi-Square may not be a valid test.
+
+
+Table of smoke by ui
+
+smoke |         0 |         1 |      Total
+------+-----------+-----------+-----------
+0     |        20 |         5 |         25
+      |     50.00 |     12.50 |      62.50
+      |     80.00 |     20.00 |     100.00
+      |     62.50 |     62.50 |      62.50
+------+-----------+-----------+-----------
+1     |        12 |         3 |         15
+      |     30.00 |      7.50 |      37.50
+      |     80.00 |     20.00 |     100.00
+      |     37.50 |     37.50 |      37.50
+------+-----------+-----------+-----------
+Total |        32 |         8 |         40
+
+Statistics for Table of smoke by ui
+
+Statistic                                DF  Value         Prob
+--------------------------------------------------------------
+Chi-Square                                1 0.0000       1.0000
+Likelihood Ratio Chi-Square               1 0.0000       1.0000
+Fisher's Exact Test                                      0.9975
+
+Phi Coefficient                      0.0000
+Contingency Coefficient              0.0000
+Cramer's V                           0.0000
+
+WARNING: 25% of the cells have expected counts less than 5. Chi-Square may not be a valid test.
+
+
+Table of ht by smoke
+
+ht |         0 |         1 |      Total
+---+-----------+-----------+-----------
+0  |        21 |        14 |         35
+   |     52.50 |     35.00 |      87.50
+   |     60.00 |     40.00 |     100.00
+   |     84.00 |     93.33 |      87.50
+---+-----------+-----------+-----------
+1  |         4 |         1 |          5
+   |     10.00 |      2.50 |      12.50
+   |     80.00 |     20.00 |     100.00
+   |     16.00 |      6.67 |      12.50
+---+-----------+-----------+-----------
+Total |        25 |        15 |         40
+
+Statistics for Table of ht by smoke
+
+Statistic                                DF  Value         Prob
+--------------------------------------------------------------
+Chi-Square                                1 0.7467       0.3875
+Likelihood Ratio Chi-Square               1 0.8102       0.3681
+Fisher's Exact Test                                      0.6328
+
+Phi Coefficient                      0.1366
+Contingency Coefficient              0.1354
+Cramer's V                           0.1366
+
+WARNING: 50% of the cells have expected counts less than 5. Chi-Square may not be a valid test.
+
+
+Table of ptl by ui
+
+ptl |         0 |         1 |      Total
+----+-----------+-----------+-----------
+0   |        31 |         6 |         37
+    |     77.50 |     15.00 |      92.50
+    |     83.78 |     16.22 |     100.00
+    |     96.88 |     75.00 |      92.50
+----+-----------+-----------+-----------
+1   |         1 |         1 |          2
+    |      2.50 |      2.50 |       5.00
+    |     50.00 |     50.00 |     100.00
+    |      3.12 |     12.50 |       5.00
+----+-----------+-----------+-----------
+2   |         0 |         1 |          1
+    |      0.00 |      2.50 |       2.50
+    |      0.00 |    100.00 |     100.00
+    |      0.00 |     12.50 |       2.50
+----+-----------+-----------+-----------
+Total |        32 |         8 |         40
+
+Statistics for Table of ptl by ui
+
+Statistic                                DF  Value         Prob
+--------------------------------------------------------------
+Chi-Square                                2 5.4561       0.0653
+Likelihood Ratio Chi-Square               2 4.4600       0.1075
+
+Cramer's V                           0.3693
+Contingency Coefficient              0.3465
+
+WARNING: 67% of the cells have expected counts less than 5. Chi-Square may not be a valid test.
+
+
+Table of ht by ptl
+
+ht |         0 |         1 |         2 |      Total
+---+-----------+-----------+-----------+-----------
+0  |        33 |         1 |         1 |         35
+   |     82.50 |      2.50 |      2.50 |      87.50
+   |     94.29 |      2.86 |      2.86 |     100.00
+   |     89.19 |     50.00 |    100.00 |      87.50
+---+-----------+-----------+-----------+-----------
+1  |         4 |         1 |         0 |          5
+   |     10.00 |      2.50 |      0.00 |      12.50
+   |     80.00 |     20.00 |      0.00 |     100.00
+   |     10.81 |     50.00 |      0.00 |      12.50
+---+-----------+-----------+-----------+-----------
+Total |        37 |         2 |         1 |         40
+
+Statistics for Table of ht by ptl
+
+Statistic                                DF  Value         Prob
+--------------------------------------------------------------
+Chi-Square                                2 2.8108       0.2453
+Likelihood Ratio Chi-Square               2 2.0210       0.3640
+
+Cramer's V                           0.2651
+Contingency Coefficient              0.2562
+
+WARNING: 83% of the cells have expected counts less than 5. Chi-Square may not be a valid test.
+
+
+Table of ht by ui
+
+ht |         0 |         1 |      Total
+---+-----------+-----------+-----------
+0  |        27 |         8 |         35
+   |     67.50 |     20.00 |      87.50
+   |     77.14 |     22.86 |     100.00
+   |     84.38 |    100.00 |      87.50
+---+-----------+-----------+-----------
+1  |         5 |         0 |          5
+   |     12.50 |      0.00 |      12.50
+   |    100.00 |      0.00 |     100.00
+   |     15.62 |      0.00 |      12.50
+---+-----------+-----------+-----------
+Total |        32 |         8 |         40
+
+Statistics for Table of ht by ui
+
+Statistic                                DF  Value         Prob
+--------------------------------------------------------------
+Chi-Square                                1 1.4286       0.2320
+Likelihood Ratio Chi-Square               1 2.4041       0.1210
+Fisher's Exact Test                                      0.5628
+
+Phi Coefficient                      0.1890
+Contingency Coefficient              0.1857
+Cramer's V                           0.1890
+
+WARNING: 50% of the cells have expected counts less than 5. Chi-Square may not be a valid test.
+
+
+Table of low by ptl
+
+low |         0 |         1 |         2 |      Total
+----+-----------+-----------+-----------+-----------
+0   |        19 |         1 |         0 |         20
+    |     47.50 |      2.50 |      0.00 |      50.00
+    |     95.00 |      5.00 |      0.00 |     100.00
+    |     51.35 |     50.00 |      0.00 |      50.00
+----+-----------+-----------+-----------+-----------
+1   |        18 |         1 |         1 |         20
+    |     45.00 |      2.50 |      2.50 |      50.00
+    |     90.00 |      5.00 |      5.00 |     100.00
+    |     48.65 |     50.00 |    100.00 |      50.00
+----+-----------+-----------+-----------+-----------
+Total |        37 |         2 |         1 |         40
+
+Statistics for Table of low by ptl
+
+Statistic                                DF  Value         Prob
+--------------------------------------------------------------
+Chi-Square                                2 1.0270       0.5984
+Likelihood Ratio Chi-Square               2 1.4133       0.4933
+
+Cramer's V                           0.1602
+Contingency Coefficient              0.1582
+
+WARNING: 67% of the cells have expected counts less than 5. Chi-Square may not be a valid test.
+
+
+Table of low by ht
+
+low |         0 |         1 |      Total
+----+-----------+-----------+-----------
+0   |        19 |         1 |         20
+    |     47.50 |      2.50 |      50.00
+    |     95.00 |      5.00 |     100.00
+    |     54.29 |     20.00 |      50.00
+----+-----------+-----------+-----------
+1   |        16 |         4 |         20
+    |     40.00 |     10.00 |      50.00
+    |     80.00 |     20.00 |     100.00
+    |     45.71 |     80.00 |      50.00
+----+-----------+-----------+-----------
+Total |        35 |         5 |         40
+
+Statistics for Table of low by ht
+
+Statistic                                DF  Value         Prob
+--------------------------------------------------------------
+Chi-Square                                1 2.0571       0.1515
+Likelihood Ratio Chi-Square               1 2.1849       0.1394
+Fisher's Exact Test                                      0.3415
+
+Phi Coefficient                      0.2268
+Contingency Coefficient              0.2212
+Cramer's V                           0.2268
+
+WARNING: 50% of the cells have expected counts less than 5. Chi-Square may not be a valid test.
+
+
+Table of low by ui
+
+low |         0 |         1 |      Total
+----+-----------+-----------+-----------
+0   |        15 |         5 |         20
+    |     37.50 |     12.50 |      50.00
+    |     75.00 |     25.00 |     100.00
+    |     46.88 |     62.50 |      50.00
+----+-----------+-----------+-----------
+1   |        17 |         3 |         20
+    |     42.50 |      7.50 |      50.00
+    |     85.00 |     15.00 |     100.00
+    |     53.12 |     37.50 |      50.00
+----+-----------+-----------+-----------
+Total |        32 |         8 |         40
+
+Statistics for Table of low by ui
+
+Statistic                                DF  Value         Prob
+--------------------------------------------------------------
+Chi-Square                                1 0.6250       0.4292
+Likelihood Ratio Chi-Square               1 0.6304       0.4272
+Fisher's Exact Test                                      0.6944
+
+Phi Coefficient                      0.1250
+Contingency Coefficient              0.1240
+Cramer's V                           0.1250
+
+WARNING: 50% of the cells have expected counts less than 5. Chi-Square may not be a valid test.
+
+
+Table of low by race
+
+low |         1 |         2 |         3 |      Total
+----+-----------+-----------+-----------+-----------
+0   |        10 |         2 |         8 |         20
+    |     25.00 |      5.00 |     20.00 |      50.00
+    |     50.00 |     10.00 |     40.00 |     100.00
+    |     52.63 |     50.00 |     47.06 |      50.00
+----+-----------+-----------+-----------+-----------
+1   |         9 |         2 |         9 |         20
+    |     22.50 |      5.00 |     22.50 |      50.00
+    |     45.00 |     10.00 |     45.00 |     100.00
+    |     47.37 |     50.00 |     52.94 |      50.00
+----+-----------+-----------+-----------+-----------
+Total |        19 |         4 |        17 |         40
+
+Statistics for Table of low by race
+
+Statistic                                DF  Value         Prob
+--------------------------------------------------------------
+Chi-Square                                2 0.1115       0.9458
+Likelihood Ratio Chi-Square               2 0.1115       0.9458
+
+Cramer's V                           0.0528
+Contingency Coefficient              0.0527
+
+WARNING: 33% of the cells have expected counts less than 5. Chi-Square may not be a valid test.
+
+
+Table of low by smoke
+
+low |         0 |         1 |      Total
+----+-----------+-----------+-----------
+0   |        11 |         9 |         20
+    |     27.50 |     22.50 |      50.00
+    |     55.00 |     45.00 |     100.00
+    |     44.00 |     60.00 |      50.00
+----+-----------+-----------+-----------
+1   |        14 |         6 |         20
+    |     35.00 |     15.00 |      50.00
+    |     70.00 |     30.00 |     100.00
+    |     56.00 |     40.00 |      50.00
+----+-----------+-----------+-----------
+Total |        25 |        15 |         40
+
+Statistics for Table of low by smoke
+
+Statistic                                DF  Value         Prob
+--------------------------------------------------------------
+Chi-Square                                1 0.9600       0.3272
+Likelihood Ratio Chi-Square               1 0.9649       0.3259
+Fisher's Exact Test                                      0.5138
+
+Phi Coefficient                      0.1549
+Contingency Coefficient              0.1531
+Cramer's V                           0.1549

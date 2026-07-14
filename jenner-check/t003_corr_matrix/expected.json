@@ -1,0 +1,19 @@
+{
+  "_captured_at": "2026-07-14T16:10:16.141166Z",
+  "_captured_run_id": "r_a8d3f0b918f24edc86fb751358c35a44",
+  "status": "ok",
+  "exit_code": 0,
+  "log_contains": [
+    "NOTE: Wrote pp (40 rows, 8 columns).",
+    "NOTE: PROC CORR data=pp",
+    "NOTE: ODS Graphics is OFF."
+  ],
+  "log_does_not_contain": [
+    "ERROR:",
+    "[JENNER-ERROR"
+  ],
+  "diagnostics": {
+    "parse_warnings": [],
+    "runtime_warnings": []
+  }
+}
