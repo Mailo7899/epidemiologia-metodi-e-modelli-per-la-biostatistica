@@ -1,0 +1,7 @@
+{
+  "bundle": "t003_corr_matrix",
+  "source_file": "epidemiologia-metodi-e-modelli-per-la-biostatistica/PROJECT 1/progetto.sas",
+  "source_blob_sha": "72e4cb69ec56bda389d87772299fb435ec0d49e5",
+  "source_commit": "06654ee2031d30df94591067faaa147388d05885",
+  "notes": "PROC CORR with plots=matrix(histogram) scatterplot matrix on age and lwt from mock pp."
+}

@@ -1,0 +1,103 @@
+
+The SURVEYSELECT Procedure
+
+Selection Method     SRS
+Input Data Set       pp2
+Number of Obs Read   40
+Sample Size          40
+Sampling Weight      1.0000
+                                     
+---------------------------  --------
+Number of Observations Read        27
+Number of Observations Used        27
+
+            Response Profile            
+     Probability modeled is LOW='1'     
+
+Ordered Value  LOW       Total Frequency
+-------------  --------  ---------------
+            1  0                      12
+            2  1                      15
+
+                                    
+------------------------------------
+WARNING: The model did not converge.
+
+                                                                                                                     
+---------------------------------------------------------------------------------------------------------------------
+WARNING: There is possibly a quasi-complete separation of data points. The maximum likelihood estimate may not exist.
+
+The LOGISTIC Procedure
+Response Variable: LOW
+
+Criterion     Value
+---------  --------
+AIC          34.787
+-2 Log L     26.787
+SC           39.970
+
+            Analysis of Maximum Likelihood Estimates            
+
+Parameter  Estimate  Standard Error  Wald Chi-Square  Pr > ChiSq
+---------  --------  --------------  ---------------  ----------
+Intercept   -2.0086          0.9907           4.1105      0.0426
+RACE         1.1420          0.5459           4.3768      0.0364
+HT           2.4761          1.9104           1.6799      0.1949
+PTL          0.9825          1.1896           0.6821      0.4089
+
+                     Odds Ratio Estimates                     
+
+Effect    Point Estimate  95% Wald CL Lower  95% Wald CL Upper
+--------  --------------  -----------------  -----------------
+RACE               3.133              1.075              9.133
+HT                11.895              0.281            502.959
+PTL                2.671              0.259             27.498
+
+                                     
+---------------------------  --------
+Number of Observations Read        27
+Number of Observations Used        27
+
+            Response Profile            
+     Probability modeled is LOW='1'     
+
+Ordered Value  LOW       Total Frequency
+-------------  --------  ---------------
+            1  0                      12
+            2  1                      15
+
+                                    
+------------------------------------
+WARNING: The model did not converge.
+
+                                                                                                                     
+---------------------------------------------------------------------------------------------------------------------
+WARNING: There is possibly a quasi-complete separation of data points. The maximum likelihood estimate may not exist.
+
+The LOGISTIC Procedure
+Response Variable: LOW
+
+Criterion     Value
+---------  --------
+AIC          35.893
+-2 Log L     25.893
+SC           42.372
+
+            Analysis of Maximum Likelihood Estimates            
+
+Parameter  Estimate  Standard Error  Wald Chi-Square  Pr > ChiSq
+---------  --------  --------------  ---------------  ----------
+Intercept   -0.0732          2.8922           0.0006      0.9798
+LWT         -0.0181          0.0262           0.4781      0.4893
+RACE         1.2843          0.6104           4.4260      0.0354
+PTL          0.7673          1.2221           0.3942      0.5301
+HT           3.0881          2.1711           2.0230      0.1549
+
+                     Odds Ratio Estimates                     
+
+Effect    Point Estimate  95% Wald CL Lower  95% Wald CL Upper
+--------  --------------  -----------------  -----------------
+LWT                0.982              0.933              1.034
+RACE               3.612              1.092             11.950
+PTL                2.154              0.196             23.630
+HT                21.935              0.311           1545.995

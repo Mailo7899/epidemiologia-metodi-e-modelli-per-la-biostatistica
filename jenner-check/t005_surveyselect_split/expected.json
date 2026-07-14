@@ -1,0 +1,19 @@
+{
+  "_captured_at": "2026-07-14T16:10:48.969158Z",
+  "_captured_run_id": "r_1fe2201e18e6438ca974f0ca3c2eb9b0",
+  "status": "ok",
+  "exit_code": 0,
+  "log_contains": [
+    "NOTE: Wrote pp (40 rows, 8 columns).",
+    "NOTE: Wrote pp2 (40 rows, 9 columns).",
+    "NOTE: PROC SORT data=pp2"
+  ],
+  "log_does_not_contain": [
+    "ERROR:",
+    "[JENNER-ERROR"
+  ],
+  "diagnostics": {
+    "parse_warnings": [],
+    "runtime_warnings": []
+  }
+}

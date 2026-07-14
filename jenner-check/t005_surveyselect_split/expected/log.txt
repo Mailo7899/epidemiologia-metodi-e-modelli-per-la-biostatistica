@@ -1,0 +1,60 @@
+NOTE: Jenner v1.5.30 (build v1.5.30+unknown.20260714T061458Z.x86_64-unknown-linux-gnu)
+
+NOTE: Option OBS changed to 100.
+NOTE: DATA pp
+
+NOTE: Processing inline DATALINES (40 lines)
+
+NOTE: Read 40 rows from DATALINES.
+NOTE: Wrote pp (40 rows, 8 columns).
+NOTE: DATA elapsed:
+  wall  0.00 seconds
+  cpu   0.00 seconds
+NOTE: DATA pp2
+
+
+NOTE: Read 40 rows from pp.
+NOTE: Wrote pp2 (40 rows, 9 columns).
+NOTE: DATA elapsed:
+  wall  0.00 seconds
+  cpu   0.00 seconds
+NOTE: PROC SORT data=pp2
+
+NOTE: Read 40 rows from pp2.
+NOTE: Wrote pp2 (40 rows, 9 columns).
+NOTE: PROC SORT statement used.
+NOTE: PROC SURVEYSELECT data=pp2
+
+NOTE: PROC SURVEYSELECT completed.
+NOTE: DATA train
+
+
+NOTE: Read 40 rows from samu.
+NOTE: Wrote train (27 rows, 11 columns).
+NOTE: DATA elapsed:
+  wall  0.00 seconds
+  cpu   0.00 seconds
+NOTE: DATA valid
+
+
+NOTE: Read 40 rows from samu.
+NOTE: Wrote valid (13 rows, 11 columns).
+NOTE: DATA elapsed:
+  wall  0.00 seconds
+  cpu   0.00 seconds
+NOTE: PROC LOGISTIC data=train
+
+NOTE: Using Python statsmodels.api.Logit version 0.14.6
+NOTE: SCORE output dataset sco_validate1 written with 13 observations.
+NOTE: ODS plot written: logistic_oddsratio.spec.json
+NOTE: ODS plot written: logistic_roc.spec.json
+NOTE: PROC LOGISTIC ODS Graphics generated.
+NOTE: PROC LOGISTIC completed. Results written to: ./ods_output/logistic_results.spec.json
+NOTE: PROC LOGISTIC data=train
+
+NOTE: Using Python statsmodels.api.Logit version 0.14.6
+NOTE: SCORE output dataset sco_validate2 written with 13 observations.
+NOTE: ODS plot written: logistic_oddsratio.spec.json
+NOTE: ODS plot written: logistic_roc.spec.json
+NOTE: PROC LOGISTIC ODS Graphics generated.
+NOTE: PROC LOGISTIC completed. Results written to: ./ods_output/logistic_results.spec.json

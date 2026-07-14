@@ -1,0 +1,95 @@
+                                     
+---------------------------  --------
+Number of Observations Read        40
+Number of Observations Used        40
+
+            Response Profile            
+     Probability modeled is low='1'     
+
+Ordered Value  low       Total Frequency
+-------------  --------  ---------------
+            1  0                      20
+            2  1                      20
+
+                                             
+---------------------------------------------
+Convergence criterion (GCONV=1E-8) satisfied.
+
+The LOGISTIC Procedure
+Response Variable: low
+
+Criterion     Value
+---------  --------
+AIC          60.682
+-2 Log L     52.682
+SC           67.438
+
+                                                   
+--------  --------  ---------------------  --------
+R-Square    0.0669  Max-rescaled R-Square    0.0892
+
+            Analysis of Maximum Likelihood Estimates            
+
+Parameter  Estimate  Standard Error  Wald Chi-Square  Pr > ChiSq
+---------  --------  --------------  ---------------  ----------
+Intercept   -0.3662          0.7538           0.2359      0.6272
+race         0.0722          0.3470           0.0433      0.8352
+ht           1.4853          1.1782           1.5892      0.2074
+ptl          0.6803          0.9800           0.4818      0.4876
+
+                     Odds Ratio Estimates                     
+
+Effect    Point Estimate  95% Wald CL Lower  95% Wald CL Upper
+--------  --------------  -----------------  -----------------
+race               1.075              0.545              2.122
+ht                 4.416              0.439             44.459
+ptl                1.974              0.289             13.478
+
+                                     
+---------------------------  --------
+Number of Observations Read        40
+Number of Observations Used        40
+
+            Response Profile            
+     Probability modeled is low='1'     
+
+Ordered Value  low       Total Frequency
+-------------  --------  ---------------
+            1  0                      20
+            2  1                      20
+
+                                             
+---------------------------------------------
+Convergence criterion (GCONV=1E-8) satisfied.
+
+The LOGISTIC Procedure
+Response Variable: low
+
+Criterion     Value
+---------  --------
+AIC          61.972
+-2 Log L     51.972
+SC           70.416
+
+                                                   
+--------  --------  ---------------------  --------
+R-Square    0.0833  Max-rescaled R-Square    0.1111
+
+            Analysis of Maximum Likelihood Estimates            
+
+Parameter  Estimate  Standard Error  Wald Chi-Square  Pr > ChiSq
+---------  --------  --------------  ---------------  ----------
+Intercept   -2.0103          2.1236           0.8961      0.3438
+lwt          0.0143          0.0172           0.6907      0.4059
+race         0.0391          0.3523           0.0123      0.9116
+ptl          0.8375          0.9992           0.7025      0.4019
+ht           1.2933          1.2092           1.1440      0.2848
+
+                     Odds Ratio Estimates                     
+
+Effect    Point Estimate  95% Wald CL Lower  95% Wald CL Upper
+--------  --------------  -----------------  -----------------
+lwt                1.014              0.981              1.049
+race               1.040              0.521              2.074
+ptl                2.311              0.326             16.377
+ht                 3.645              0.341             38.986

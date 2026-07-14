@@ -1,0 +1,7 @@
+{
+  "bundle": "t004_logistic_models",
+  "source_file": "epidemiologia-metodi-e-modelli-per-la-biostatistica/PROJECT 1/progetto.sas",
+  "source_blob_sha": "72e4cb69ec56bda389d87772299fb435ec0d49e5",
+  "source_commit": "06654ee2031d30df94591067faaa147388d05885",
+  "notes": "Author's competing predictive logistic models (race ht ptl; lwt race ptl ht) with /Rsquare on mock pp; produces ML estimates and odds ratios."
+}
